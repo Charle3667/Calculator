@@ -1,0 +1,93 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #E0E1DD;
+}
+
+#header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #778DA9;
+    color: white;
+    font-size: xx-large;
+    height: 75px;
+}
+
+#container {
+    margin-top: 200px;
+    margin-bottom: auto;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+    height: 270px;
+    border-radius: 10px;
+    
+}
+
+#display {
+    background-color: #0E181F;
+    display: flex;
+    height: 70px;
+    flex-direction: row-reverse;
+    align-content: center;
+    border-radius: 10px 10px 0 0 ;
+}
+
+#displayText {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 10px;
+    font-size: larger;
+    color: white;
+}
+
+#row {
+    display: flex;
+}
+
+button {
+    display: flex;
+    flex: 1 1 0;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    background-color: #2B2B2A;
+    border-right: black 1px solid;
+    border-bottom: black 1px solid;
+    border-top: none;
+    border-left: none;
+    margin: 0;
+    height: 40px;
+}
+
+#rowT {
+    color: white;
+    background-color: #303B42;
+}
+
+#columnR {
+    border-right: none;
+    color: white;
+    background-color: #FA9500;
+}
+
+#bottomRowL {
+  flex: 236;
+  border-radius: 0 0 0 10px;
+}
+
+#bottomRowM {
+    flex: 100;
+}
+
+#bottomRowR {
+  flex: 100;
+  border-radius: 0 0 10px 0;
+  border-right: none;
+  color: white;
+  background-color: #FA9500;
+}
