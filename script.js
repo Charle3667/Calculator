@@ -2,9 +2,14 @@ const display = document.querySelector("#displayText");
 let digitArray = [];
 let operationArray = [];
 let equalsAnswer = [];
+let decimalStatus = false;
 
 function updateDisplay() {
     display.innerHTML = digitArray.join("");
+}
+
+function roundNumber(num) {
+    return Math.round((num + Number.EPSILON) * 10000) / 10000;
 }
 
 // Digit Button Functions
@@ -37,6 +42,42 @@ digitButtons.forEach((div) => {
 
 // Digit Button Functions
 
+// Decimal Button functions
+
+function decimalCheck() {
+    digitArray.forEach((int) => {
+        if (int === '.') {
+            return(decimalStatus = true)
+        } else {console.log ("no decimal")}
+    });
+}
+
+const decimalButton = document.querySelector(".decimal");
+decimalButton.addEventListener("mousedown", function (event) {
+    event.target.style.opacity = 0.7;
+});
+decimalButton.addEventListener("mouseup", function (event) {
+    event.target.style.opacity = 1;
+});
+decimalButton.addEventListener("mouseleave", function (event) {
+    event.target.style.opacity = 1;
+});
+decimalButton.addEventListener("mousedown", () => {
+    decimalCheck(digitArray);
+    console.log(decimalStatus);
+    if ((decimalStatus === false)) {
+        digitArray.push(decimalButton.innerHTML);
+        clearToggle();
+        console.log("digit array: " + digitArray);
+        console.log("op array: " + operationArray);
+        return updateDisplay();
+    } else {
+        decimalStatus = false;
+    }
+});
+
+// Decimal Button functions
+
 // Clear button Functions
 
 const clear = document.querySelector(".clear");
@@ -51,9 +92,10 @@ clear.addEventListener("mouseleave", function (event) {
 });
 clear.addEventListener("mousedown", () => {
     if (digitArray.length > 0) {
+        convertArray();
         digitArray.pop();
         clearToggle();
-        return updateDisplay();
+        return(updateDisplay());
     } else {
         digitArray = [];
         operationArray = [];
@@ -61,6 +103,12 @@ clear.addEventListener("mousedown", () => {
         return updateDisplay();
     }
 });
+
+function convertArray () {
+    let subject = display.innerHTML
+    let newArray = Array.from(subject)
+    return(digitArray = newArray);
+}
 
 function clearToggle() {
     if (digitArray.length > 0) {
@@ -85,11 +133,18 @@ turnNeg.addEventListener("mouseleave", function (event) {
     event.target.style.opacity = 1;
 });
 turnNeg.addEventListener("mousedown", () => {
-    currentNumber = digitArray.join("");
-    digitArray = [];
-    negNumber = turnNegative(currentNumber);
-    digitArray.push(negNumber);
-    return updateDisplay();
+    if (digitArray.length > 0) {
+        currentNumber = digitArray.join("");
+        digitArray = [];
+        negNumber = turnNegative(currentNumber);
+        digitArray.push(negNumber);
+        return updateDisplay();
+    } else {
+        negNumber = turnNegative(display.innerHTML);
+        digitArray.push(negNumber);
+        updateDisplay();
+        return (digitArray = []);
+    }
 });
 
 function turnNegative(x) {
@@ -105,7 +160,7 @@ function remainder(x, y) {
 }
 
 function add(x, y) {
-    return parseInt(x) + parseInt(y);
+    return parseFloat(x) + parseFloat(y);
 }
 
 function subtract(x, y) {
@@ -158,16 +213,28 @@ opButtons.forEach((div) => {
 });
 opButtons.forEach((div) => {
     div.addEventListener("mousedown", () => {
-        console.log("digit array before: " + digitArray);
-        console.log("op array before: " + operationArray);
-        operationArray.push(display.innerHTML);
-        operationArray.push(div.innerHTML);
-        digitArray = [];
-        equalsAnswer = [];
-        arrayCalc(operationArray, div.innerHTML);
-        clearToggle();
-        console.log("digit array after: " + digitArray);
-        console.log("op array after: " + operationArray);
+        if (operationArray < 1) {
+            console.log("digit array before: " + digitArray);
+            console.log("op array before: " + operationArray);
+            operationArray.push(display.innerHTML);
+            operationArray.push(div.innerHTML);
+            digitArray = [];
+            equalsAnswer = [];
+            arrayCalc(operationArray, div.innerHTML);
+            clearToggle();
+            console.log("digit array after: " + digitArray);
+            console.log("op array after: " + operationArray);
+        } else {
+            console.log("digit array before: " + digitArray);
+            console.log("op array before: " + operationArray);
+            operationArray.splice(1, 1, div.innerHTML);
+            digitArray = [];
+            equalsAnswer = [];
+            arrayCalc(operationArray, div.innerHTML);
+            clearToggle();
+            console.log("digit array after: " + digitArray);
+            console.log("op array after: " + operationArray);
+        }
         // operator button would push digit content and operator to array.
     });
 });
@@ -179,9 +246,11 @@ opButtons.forEach((div) => {
 function arrayCalc(array, op) {
     if (array.length === 4) {
         let calc = operate(array[0], array[1], array[2]);
-        operationArray = [calc, op];
+        let floatCalc = parseFloat(calc);
+        let roundedCalc = roundNumber(floatCalc);
+        operationArray = [roundedCalc, op];
         digitArray = [];
-        digitArray.push(calc);
+        digitArray.push(roundedCalc);
         updateDisplay();
         digitArray = [];
         return console.log("array calc fires");
@@ -192,10 +261,12 @@ function arrayCalc(array, op) {
 
 function equalsArrayCalc(array) {
     let calc = operate(array[0], array[1], array[2]);
+    let floatCalc = parseFloat(calc);
+    let roundedCalc = roundNumber(floatCalc);
     operationArray = [];
     digitArray = [];
-    equalsAnswer = [calc, array[1], array[2]];
-    digitArray.push(calc);
+    equalsAnswer = [roundedCalc, array[1], array[2]];
+    digitArray.push(roundedCalc);
     updateDisplay();
     digitArray = [];
     console.log("digit array after: " + digitArray);
@@ -218,13 +289,13 @@ equals.addEventListener("mouseleave", function (event) {
 });
 equals.addEventListener("mousedown", () => {
     if (equalsAnswer.length > 1) {
-        console.log("equalsAnswer Array is full")
-        return(equalsArrayCalc(equalsAnswer));   
+        console.log("equalsAnswer Array is full");
+        return equalsArrayCalc(equalsAnswer);
     } else if (operationArray.length === 2) {
         operationArray.push(display.innerHTML);
-        console.log("equalsAnswer Array is empty")
+        console.log("equalsAnswer Array is empty");
         return equalsArrayCalc(operationArray);
-    } else (console.log("both empty"))
+    } else console.log("both empty");
 });
 
 //take initial set of digits. when an operator is called, push digets and operator to array. when second set
